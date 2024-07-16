@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>EmoBrand</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Favicons -->
+  <link href="static/img/smile.png" rel="icon">
+  <link href="static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="static/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="static/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="static/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="static/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="static/css/style.css" rel="stylesheet">
+
+  <!-- 
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['emotion', 'count'],
+        ['Anger', 11],
+        ['Surprise', 2],
+        ['Sadness', 2],
+        ['Joy', 2],
+        ['Neutral', 7],
+        ['Fear', 7],
+        ['Disgust', 7]
+      ]);
+
+
+      var options = {
+        title: ' ',
+        slices: {
+          0: { color: '' },    // 
+          1: { color: '' },   // 
+          2: { color: '' }, // 
+          3: { color: '' }, // Joy
+          4: { color: '' },   // Neutral
+          5: { color: '' },  // Fear
+          6: { color: '' }  // Disgust
+        }
+      };
+      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+      chart.draw(data, options);
+    }
+  </script>
+-->
+
+  <script>
+
+   /* document.addEventListener("DOMContentLoaded", function () {
+      const showButton = document.getElementById("showButton");
+      const chartContainer = document.getElementById("chartContainer");
+
+      showButton.addEventListener("click", function () {
+        // Display the chart container
+        chartContainer.style.display = "block";
+
+        // Create and render the pie chart
+        const ctx = document.getElementById("pieChart").getContext("2d");
+        new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: ["anger", "surprise", "sadness", "joy", "neutral", "fear", "disgust"],
+            datasets: [{
+              data: [30, 40, 30, 30, 40, 30, 10], // Example data
+              backgroundColor: ["rgb(112, 128, 144)", "rgb(188, 143, 143)", "rgb(54, 162, 235)", "rgb(201, 203, 207)", "rgb(255, 205, 86)", "rgb(75, 192, 192)", "rgb(255, 99, 132)"] // Example colors
+            }],
+          },
+        });
+      });
+    });
+*/
+  </script>
+
+
+  <!-- =======================================================
+  * Template Name: Tempo
+  * Updated: Sep 18 2023 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/tempo-free-onepage-bootstrap-theme/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+
+
+</head>
+
+<body>
+
+<script>
+    var callAPI = (brand) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({"brand": brand});
+        var requestOptions = {
+            method: 'POST',
+            body: raw,
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        fetch('/run_script', requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            return result.body;
+        })
+        .then(data => {
+            console.log(data);
+            let emo_dict = data.emo_dict;
+            let labelsx = [];
+            let valuesx = [];
+            for (const [key, value] of Object.entries(emo_dict)) {
+                console.log('key-->', key, 'value-->', value);
+                labelsx.push(key);
+                valuesx.push(value);
+            }
+
+            const chartContainer = document.getElementById("chartContainer");
+            chartContainer.style.display = "block";
+            const ctx = document.getElementById("pieChart").getContext("2d");
+            new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: labelsx,
+                    datasets: [{
+                        data: valuesx,
+                        backgroundColor: ["rgb(112, 128, 144)", "rgb(188, 143, 143)", "rgb(54, 162, 235)", "rgb(201, 203, 207)", "rgb(255, 205, 86)", "rgb(75, 192, 192)", "rgb(255, 99, 132)"]
+                    }],
+                },
+            });
+
+            let sample_tweet = data.sample_tweet;
+            let recom = data.recom;
+            let recom_values = [];
+            for (const [key, value] of Object.entries(recom)) {
+                console.log('key-->', key, 'value-->', value);
+                recom_values.push(value);
+            }
+
+            document.querySelectorAll('.icon-box .description')[0].textContent = recom_values[0];
+            document.querySelectorAll('.icon-box .description')[1].textContent = recom_values[1];
+            document.querySelectorAll('.icon-box .description')[2].textContent = recom_values[2];
+            document.querySelectorAll('.icon-box .description')[3].textContent = recom_values[3];
+            document.querySelector('.text-center .tweet').textContent = sample_tweet;
+        })
+        .catch(error => console.log('error', error));
+    }
+</script>
+
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top ">
+    <div class="container d-flex align-items-center justify-content-between">
+
+      <h1 class="logo"><a href="index.html">Emotion Analysis</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo"><img src="static/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+          <li><a class="nav-link scrollto" href="#about">Get Insights</a></li>
+          <li><a class="nav-link scrollto" href="#footer">Services</a></li>
+          <li><a class="nav-link scrollto" href="#team">Team</a></li>
+          <li><a class="nav-link scrollto" href="#real_about">About</a></li>
+          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero">
+    <div class="hero-container">
+      <h3>Emotion Analysis of Social Media Posts for</h3>
+      <h1>Brand Perception</h1>
+      <h2>A powerful solution for social media analysis</h2>
+      <a href="#footer" class="btn-get-started scrollto">Get Started</a>
+    </div>
+  </section><!-- End Hero -->
+
+
+  <footer id="footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="row justify-content-center"> <!-- Use a row with center alignment -->
+          <div class="col-lg-4 col-md-6 footer-newsletter text-center"> <!-- Center content within this div -->
+            <h2>Enter your brand name</h2>
+            <h4>Scraping data from social media now !</h4>
+            <form action="/run_script" method="post">
+              <input type="text" name="brand" placeholder="Brand Name" id="brand" >
+            </form>
+            <button id="showButton"
+              style="  position: absolute;background: #e43c5c;color: #fff;transition: 0.3s; border-radius: 4px;"
+			  onclick="callAPI(document.getElementById('brand').value)">Scrape</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+	
+  <main id="main">
+
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+      <div class="container">
+        <div class="section-title">
+          <h2>Results</h2>
+          <h3>Social media most common opinions on <span>your brand</span></h3>
+          <p>Get insights about what people says on your brand </p>
+        </div>
+      </div>
+    </section><!-- End About Section -->
+
+    <!--   <div id="PieChart" class="chart"></div> -->
+
+    <div id="chartContainer" class="hidden">
+      <canvas id="pieChart"></canvas>
+    </div>
+
+
+
+    <!-- ======= Services Section ======= -->
+
+
+    <section id="services" class="services">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Recommendations</h2>
+          <h3>We do offer awesome <span>Recommendations</span></h3>
+          <p>These are the most suitable recommendations upoin your brand analysis</p>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bxl-dribbble"></i></div>
+              <h4 class="title"><a href="">Customer Service</a></h4>
+              <p class="description", id="customer_service"></p>
+            </div>
+          </div>
+
+
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-file"></i></div>
+              <h4 class="title"><a href="">Product Quality</a></h4>
+              <p class="description"></p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-tachometer"></i></div>
+              <h4 class="title"><a href="">Price</a></h4>
+              <p class="description"></p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-world"></i></div>
+              <h4 class="title"><a href="">Marketing</a></h4>
+              <p class="description"></p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Services Section -->
+
+    <!-- ======= Features Section ======= -->
+    <!-- End Features Section -->
+
+    <!-- ======= Cta Section ======= -->
+    <section id="cta" class="cta">
+      <div class="container">
+
+        <div class="text-center">
+          <h3>Sample Tweets</h3>
+          <p class="tweet" id="sampletweet"></p>
+          <a class="cta-btn" href="#about">Back to results</a>
+        </div>
+
+      </div>
+    </section><!-- End Cta Section -->
+
+    <!-- ======= Portfolio Section ======= -->
+
+
+    <!-- ======= Pricing Section ======= -->
+    <section id="pricing" class="pricing">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Pricing</h2>
+          <h3>Our Competing <span>Prices</span></h3>
+          <p>Subscribe now to one of our plans </p>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-4 col-md-6">
+            <div class="box">
+              <h3>Free</h3>
+              <h4><sup>$</sup>0<span> / month</span></h4>
+              <ul>
+                <li>scrap up to 100 tweets</li>
+                <li>Nec feugiat nisl</li>
+                <li>Nulla at volutpat dola</li>
+                <li class="na">Multiple Brands</li>
+                <li class="na">Multiple Users</li>
+              </ul>
+              <div class="btn-wrap">
+                <a href="#" class="btn-buy">Subscribe Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mt-4 mt-md-0">
+            <div class="box recommended">
+              <span class="recommended-badge">Recommended</span>
+              <h3>Business</h3>
+              <h4><sup>$</sup>19<span> / month</span></h4>
+              <ul>
+                <li>scrap up to 10000 tweets</li>
+                <li>Dashborads and Insights</li>
+                <li>Nulla at volutpat dola</li>
+                <li>Single Brand</li>
+                <li class="na">Multiple Users</li>
+              </ul>
+              <div class="btn-wrap">
+                <a href="#" class="btn-buy">Subscribe Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mt-4 mt-lg-0">
+            <div class="box">
+              <h3>Enterprise</h3>
+              <h4><sup>$</sup>29<span> / month</span></h4>
+              <ul>
+                <li>Unlimited Tweets </li>
+                <li>Frequent updates</li>
+                <li>Unlimited App Access</li>
+                <li>Multiple Brands</li>
+                <li>Multiple Users</li>
+              </ul>
+              <div class="btn-wrap">
+                <a href="#" class="btn-buy">Subscribe Now</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Pricing Section -->
+
+    <!-- ======= F.A.Q Section ======= -->
+    <section id="faq" class="faq">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>F.A.Q</h2>
+          <h3>Frequently Asked <span>Questions</span></h3>
+        </div>
+
+        <ul class="faq-list">
+
+          <li>
+            <div data-bs-toggle="collapse" class="collapsed question" href="#faq1">Which social media platforms do we
+              offer? <i class="bi bi-chevron-down icon-show"></i><i class="bi bi-chevron-up icon-close"></i></div>
+            <div id="faq1" class="collapse" data-bs-parent=".faq-list">
+              <p>
+                Facebook, Twitter and Instagram.
+              </p>
+            </div>
+          </li>
+
+          <li>
+            <div data-bs-toggle="collapse" href="#faq2" class="collapsed question">What is the accuracy of the results ?
+              <i class="bi bi-chevron-down icon-show"></i><i class="bi bi-chevron-up icon-close"></i>
+            </div>
+            <div id="faq2" class="collapse" data-bs-parent=".faq-list">
+              <p>
+                More than 92%.
+              </p>
+            </div>
+          </li>
+
+          <li>
+            <div data-bs-toggle="collapse" href="#faq3" class="collapsed question">Can I use this toll to get insights
+              from comments , Reviews , posts and Tweets ? <i class="bi bi-chevron-down icon-show"></i><i
+                class="bi bi-chevron-up icon-close"></i></div>
+            <div id="faq3" class="collapse" data-bs-parent=".faq-list">
+              <p>
+                Yes, you can.
+              </p>
+            </div>
+          </li>
+
+        </ul>
+
+      </div>
+    </section><!-- End F.A.Q Section -->
+
+    <!-- ======= Team Section ======= -->
+    <section id="team" class="team">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Team</h2>
+          <h3>Our Hardworking <span>Team</span></h3>
+          <p>A group of AI & Data Science M.Sc. students who are interested in natural language processing.</p>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+            <div class="member">
+              <div class="member-img">
+                <img src="static/img/team/team-1.jpg" class="img-fluid" alt="">
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Sahar Alaa</h4>
+                <span>Queens University Student</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+            <div class="member">
+              <div class="member-img">
+                <img src="static/img/team/team-2.jpg" class="img-fluid" alt="">
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Salma Osama </h4>
+                <span>Queens University Student</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+            <div class="member">
+              <div class="member-img">
+                <img src="static/img/team/Rewan-cut.jpg" class="img-fluid" alt="">
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Rewan Sallam</h4>
+                <span>Queens University Student</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+            <div class="member">
+              <div class="member-img">
+                <img src="static/img/team/team-4.jpg" class="img-fluid" alt="">
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Esraa Mahmoud</h4>
+                <span>Queens University Student</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Team Section -->
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Contact</h2>
+          <h3>Contact <span>Us</span></h3>
+          <p>You are welcome anytime.</p>
+        </div>
+
+        <div>
+          <iframe style="border:0; width: 100%; height: 270px;"
+            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621"
+            frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <div class="row mt-5">
+
+          <div class="col-lg-4">
+            <div class="info">
+              <div class="address">
+                <i class="bi bi-geo-alt"></i>
+                <h4>Location:</h4>
+                <p> El-Borg Street, Zamalek, Cairo 535022</p>
+              </div>
+
+              <div class="email">
+                <i class="bi bi-envelope"></i>
+                <h4>Email:</h4>
+                <p>debi-group12@gmail.com</p>
+              </div>
+
+              <div class="phone">
+                <i class="bi bi-phone"></i>
+                <h4>Call:</h4>
+                <p>+20100000000000</p>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-lg-8 mt-5 mt-lg-0">
+
+            <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+                </div>
+                <div class="col-md-6 form-group mt-3 mt-md-0">
+                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+              </div>
+              <div class="form-group mt-3">
+                <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
+              </div>
+              <div class="my-3">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Your message has been sent. Thank you!</div>
+              </div>
+              <div class="text-center"><button type="submit">Send Message</button></div>
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Contact Section -->
+
+  </main><!-- End #main -->
+
+
+  <footer id="footer">
+
+    <div class="footer-top">
+      <div class="container">
+        <div class="row">
+          <!-- ======= About Section ======= -->
+          <section id="real_about" class="about">
+            <div class="container">
+
+              <div class="section-title">
+                <h2>About</h2>
+                <h3>Learn More <span>About Us</span></h3>
+                <p>Welcome to our website 😄</p>
+              </div>
+
+              <div class="row content">
+                <div class="col-lg-6">
+                  <p>
+                    We offer our tool for all business owners
+                  </p>
+                  <ul>
+                    <li><i class="ri-check-double-line"></i> Do you need to know how many customers are happy to deal
+                      with your company?
+                    </li>
+                    <li><i class="ri-check-double-line"></i> Do you want to know the engagement rate of your customers?
+                    </li>
+                    <li><i class="ri-check-double-line"></i> Do you want to know the level of satisfaction of your
+                      customers through social networking sites?
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-lg-6 pt-4 pt-lg-0">
+                  <p>
+                    Then you are in the right place, and why to wait? <br /> Come on, we will help you to know all about
+                    this
+                    and more. Press Start
+                  </p>
+                  <a href="#footer" class="btn-learn-more">Start</a>
+                </div>
+              </div>
+
+            </div>
+          </section><!-- End About Section -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container d-md-flex py-4">
+
+      <div class="me-md-auto text-center text-md-start">
+        <div class="copyright">
+          &copy; Copyright <strong><span>Emotion Analysis</span></strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+
+          <!-- All the links in the footer should remain intact. -->
+          <!-- You can delete the links only if you purchased the pro version. -->
+          <!-- Licensing information: https://bootstrapmade.com/license/ -->
+          <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/tempo-free-onepage-bootstrap-theme/ -->
+
+          Designed by <a href="https://bootstrapmade.com/">DEBI-group-12</a>
+        </div>
+      </div>
+      <div class="social-links text-center text-md-right pt-3 pt-md-0">
+        <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
+        <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
+        <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+
+
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="static/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="static/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="static/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="static/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="static/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
