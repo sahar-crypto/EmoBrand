@@ -516,7 +516,6 @@ def index():
 def run_script():
     data = request.get_json()
     brand = data.get('brand') 
-    # Assuming you have a script called script.py that takes user_input as an argument
     data = get_posts(brand)
     response = get_predictions(data)
     return jsonify({'body': response})
